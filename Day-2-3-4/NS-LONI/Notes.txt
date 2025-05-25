@@ -1,0 +1,6 @@
+| OOP Pillar    | Concept                        | Key Keyword(s)                 | File Example             |
+| ------------- | ------------------------------ | ------------------------------ | ------------------------ |
+| Abstraction   | Hides implementation           | `abstract`, `interface`        | `MainAbstraction.java`   |
+| Encapsulation | Protects data                  | `private`, `get/set`           | `MainEncapsulation.java` |
+| Inheritance   | Reuse code                     | `extends`                      | `MainInheritance.java`   |
+| Polymorphism  | Many forms (overload/override) | `@Override`, method name reuse | `MainPolymorphism.java`  |
