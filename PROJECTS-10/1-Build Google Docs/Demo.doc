@@ -1,0 +1,173 @@
+The provided **UML class diagram** and **Java code** together form the **Low-Level Design (LLD)** for a **Google Docs-like Document Editor Project**. This system enables users to add text, images, formatting (like newline, tab), render documents, and save them using different storage backends (e.g., file or DB).
+
+---
+
+### 🧩 COMPONENT BREAKDOWN (BASED ON UML & CODE)
+
+---
+
+### 1. **DocumentElement Interface** (`<<abstract>>`)
+
+* **Purpose**: Base interface for all document parts (text, images, etc.).
+* **Method**:
+
+  * `String render();` – returns string representation of the element.
+* **Implemented by**:
+
+  * `TextElement` – for plain text.
+  * `ImageElement` – for images.
+  * (Also implemented in code: `NewLineElement`, `TabSpaceElement`)
+
+> 📦 UML: `DocumentElement` is shown as the superclass with generalization arrows to `TextElement` and `ImageElement`.
+
+---
+
+### 2. **Document Class** (`<<model>>`)
+
+* **Purpose**: Holds a list of all `DocumentElement` objects.
+* **Attributes**:
+
+  * `List<DocumentElement> elements` – stores content in order.
+* **Methods**:
+
+  * `addElement(DocumentElement el)` – add new content.
+  * `render()` or `getElements()` – return all elements as string or list.
+
+> 📦 UML: `Document` contains a 1-to-many relationship with `DocumentElement`.
+
+---
+
+### 3. **Persistence Interface** (`<<abstract>>`)
+
+* **Purpose**: Decouple document saving mechanism.
+* **Method**:
+
+  * `save(String data)` – persists rendered content.
+
+**Concrete Implementations**:
+
+* `FileStorage` – saves content to a `.txt` file.
+* `DBStorage` – placeholder for saving to a database.
+
+> 📦 UML: `Persistence` is an abstract class with subclasses `FileStorage` and `DBStorage`.
+
+---
+
+### 4. **DocumentEditor**
+
+* **Purpose**: The main service class used by the **Client**.
+* **Attributes**:
+
+  * `Document doc` – document being edited.
+  * `Persistence storage` – chosen storage method.
+* **Methods**:
+
+  * `addText(String text)` – add text.
+  * `addImage(String path)` – add image.
+  * `addNewLine()` / `addTabSpace()` – formatting.
+  * `renderDocument()` – combines and returns document string.
+  * `saveDocument()` – saves using chosen storage backend.
+
+> 📦 UML: `DocumentEditor` depends on both `Document` and `Persistence`.
+
+---
+
+### 5. **DocumentRenderer** (In UML but not in code)
+
+* **Purpose** (inferred): A separate renderer class that takes a `Document` and returns a rendered version (like HTML/Markdown, etc.).
+* **Methods**:
+
+  * `render()` – would return a string representation.
+* **Note**: In the Java code, this functionality is handled directly inside `DocumentEditor` and `Document`.
+
+---
+
+### 6. **Client**
+
+* **Purpose**: The entry point. It creates `Document`, `Persistence`, and uses `DocumentEditor`.
+* **Operations**:
+
+  * Adds content to the document.
+  * Renders and saves the final result.
+
+> 📦 UML: Client uses `DocumentEditor`.
+
+---
+
+### 🔁 FLOW EXPLAINED USING UML + CODE
+
+1. **Client** initializes:
+
+   ```java
+   Document doc = new Document();
+   Persistence storage = new FileStorage();
+   DocumentEditor editor = new DocumentEditor(doc, storage);
+   ```
+
+2. **Client adds content**:
+
+   ```java
+   editor.addText("Hello");
+   editor.addNewLine();
+   editor.addImage("image.png");
+   ```
+
+3. **DocumentEditor** forwards requests to the `Document`:
+
+   * Adds `TextElement`, `ImageElement`, etc. into `List<DocumentElement>`.
+
+4. **DocumentEditor.renderDocument()**:
+
+   * Loops through all `DocumentElement` objects and calls `render()`.
+
+5. **Save Operation**:
+
+   ```java
+   editor.saveDocument(); // uses FileStorage.save(renderedString)
+   ```
+
+---
+
+### 🧠 DESIGN PRINCIPLES FOLLOWED
+
+| Principle / Pattern       | Usage Example                                                                 |
+| ------------------------- | ----------------------------------------------------------------------------- |
+| **Interface Segregation** | `DocumentElement`, `Persistence` provide clear interfaces.                    |
+| **Open/Closed Principle** | You can add new `DocumentElement` types (e.g., TableElement) without changes. |
+| **Strategy Pattern**      | `Persistence` interface with `FileStorage` or `DBStorage`.                    |
+| **Composite Pattern**     | `Document` aggregates various `DocumentElement` components.                   |
+| **Single Responsibility** | Each class (Document, Editor, Renderer) has one focused job.                  |
+
+---
+
+### ✅ ADDITIONS POSSIBLE
+
+* Implement `DocumentRenderer` for different output formats (HTML, PDF, Markdown).
+* Add more element types: `TableElement`, `ListElement`, `BoldTextElement`.
+* GUI using JavaFX or web frontend with REST backend.
+* Collaboration using concurrency or sockets.
+
+---
+
+### 🖼️ Final LLD Summary Table
+
+| Component          | Description                                   |
+| ------------------ | --------------------------------------------- |
+| `DocumentElement`  | Abstract base for all document items          |
+| `Text/Image/...`   | Concrete implementations of elements          |
+| `Document`         | Holds list of elements and renders them       |
+| `Persistence`      | Abstract save interface                       |
+| `FileStorage`      | Concrete implementation to write to disk      |
+| `DocumentEditor`   | Service class to add/edit/render/save content |
+| `Client`           | Entry point; uses the editor                  |
+| `DocumentRenderer` | (Optional) Separate rendering logic           |
+
+---
+
+Would you like me to:
+
+* Extend the LLD to support **rich text formatting** (bold, italic)?
+* Generate a **PDF** from the document content?
+* Draw this LLD digitally using Mermaid or PlantUML?
+
+Let me know!
